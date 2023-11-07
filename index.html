@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grahan Yatri</title>
+  <!-- Open Graph meta tags for sharing on social media -->
+<!-- Open Graph meta tags for sharing on social media -->
+<meta property="og:title" content="Eclipses: An Immersive Experience">
+<meta property="og:description" content="Explore the mechanics of eclipses, eclipse seasons, and their significance in our solar system through an interactive educational platform.">
+<meta property="og:image" content="https://i.imgur.com/TZcJ1CK.png"> <!-- Replace with the URL of your web app's logo image -->
+<meta property="og:image:url" content="https://i.imgur.com/TZcJ1CK.png"> <!-- Replace with the URL of your web app's logo image -->
+<meta property="og:image:width" content="200"> <!-- Set the width of your logo image in pixels -->
+<meta property="og:image:height" content="200"> <!-- Set the height of your logo image in pixels -->
+<meta property="og:url" content="https://k-beta-eight.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Space Apps Challenge 2023">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+
+        }
+        /* Sketchfab iframe background */
+        .sketchfab-iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none; /* Add this line to allow interaction with content on top */
+        }
+        /* Buttons */
+        .btn {
+            background-color: #3b3933;
+            color: #fff;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            opacity: 0.9;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            margin-bottom: 10px; /* Add space between buttons */
+            opacity: 0.8;
+        }
+        .btn:hover {
+            opacity: 1;
+            background-color: #007bff;
+        }
+        /* Container for content */
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            width: 120%; /* Increase the width to 120% */
+            max-width: 600px;
+            background-color: rgba(61, 59, 56, 0.3);
+            padding: 20px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: none; /* Initially hidden */
+            color: white;
+        }
+        /* Full-width input fields */
+        input[type=text], textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: #3b3933;
+            margin-bottom: 10px;
+        }
+        /* Chat container */
+        .chat-container {
+            position: fixed;
+            top: 20px; /* Adjust the top positioning */
+            right: 20px; /* Adjust the right positioning */
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 1;
+        }
+        /* Chat textarea */
+        .chat-textarea {
+            width: 80%;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+        /* Chat submit button */
+        .chat-submit {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        /* Hide content initially */
+        .hidden-content {
+            display: none;
+        }
+        /* Mobile customization */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 90%;
+            }
+        }
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        @media only screen and (min-width: 768px) {
+            video {
+                display: flex;
+            }
+            #mobile-video {
+                display: none;
+            }
+        }
+        @media only screen and (max-width: 767px) {
+            video {
+                display: none;
+            }
+            #mobile-video {
+                display: block;
+            }
+        }
+
+        /* Adjust initial video sizing */
+        .initial-video {
+            object-fit: fill;
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+            /* Video background */
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+        }
+        /* Style for the profile dropdown container */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+            z-index: 1; /* Ensure it's above the video */
+        }
+        /* Style for the profile button */
+        .profile-button {
+            background-color: #49b94d;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
+        /* Style for the profile dropdown content (hidden by default) */
+        .profile-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #524848;
+            min-width: 160px;
+            box-shadow: 0px -8px 16px 0px rgba(0,0,0,0.2); /* Updated to open upwards */
+            z-index: 2; /* Increase the z-index to ensure it's on top of the video */
+            right: 0; /* Align the dropdown with the right edge of the button */
+            opacity: 0.7;
+        }
+        /* Style for each individual profile */
+        .profile {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        /* Style for the circular profile images */
+        .profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        /* Style for the profile names */
+        .profile-name {
+            font-weight: bold;
+        }
+        /* Hover effect for profile items */
+        .profile:hover {
+            background-color: #ddd;
+        }
+        /* Display the dropdown content when hovering over the profile button */
+        .profile-dropdown:hover .profile-dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div hidden-content>
+    <video autoplay muted loop >
+        <source src="space-bg.mp4" type="video/mp4" >
+        Your browser does not support the video tag.
+    </video>
+    </div>
+    <!-- Container for content -->
+    <div class="container hidden-content">
+        <!-- Content here -->
+        <h1>Welcome to Grahan Yatri !!!</h1>
+        <p>Your Trip to a New Learning..</p>
+        <!-- Major buttons -->
+        <div class="button-row">
+            <a class="btn project-button" href="https://nasa-game-1-0-yl2l-000.vercel.app/" target="_blank">Play Game</a>
+            <a class="btn project-button" href="index-1.html">Solar System</a><!-- Linked to index-1.html -->
+            <a class="btn about-button" href="about.html">About Page</a>
+            <a class="btn about-button" href="https://www.canva.com/design/DAFwpH641ko/ifV6PgRHG1s4Y0QbJ5uG0g/view?utm_content=DAFwpH641ko&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink" target="_blank">Check Presentation</a>
+            <a class="btn about-button" href="team.html">Our Team</a>
+            <a class="btn subscribe-button" href="calender.html">Set Reminders</a>
+            <a class="btn subscribe-button" href="REGISTER.html">Subscribe to Newsletter</a>
+            <a class="btn subscribe-button" href="https://forms.gle/muNzZwsHLNxsjVtT9" target="_blank">Feedback Form</a>
+        </div>
+    </div>
+ <!-- Chat container -->
+<div class="chat-container">
+    <div class="profile-dropdown">
+        <button class="profile-button">Connect</button>
+        <div class="profile-dropdown-content">
+            <div class="profile">
+                <img src="./assets/profile-image-1.jpeg" alt="Profile 1">
+                <div class="profile-name"><a href="https://linktr.ee/anuj_dwivedi" target="_blank">Anuj Dwivedi</a></div>
+            </div>
+            <div class="profile">
+                <img src="./assets/profile-image-2.jpeg" alt="Profile 2">
+                <div class="profile-name"><a href="https://linktr.ee/Darshan_Anand" target="_blank">Darshan Anand</a></div>
+            </div>
+            <div class="profile">
+                <img src="./assets/profile-image-3.jpeg" alt="Profile 3">
+                <div class="profile-name"><a href="https://github.com/KVS-Balaji" target="_blank">KVS Balaji</a></div>
+            </div>
+            <div class="profile">
+                <img src="./assets/profile-image-4.jpeg" alt="Profile 4">
+                <div class="profile-name"><a href="https://github.com/Sourabh-Gor" target="_blank">Saurabh J Gor</a></div>
+            </div>
+            <div class="profile">
+                <img src="./assets/prof-5.jpeg" alt="Profile 5">
+                <div class="profile-name"><a href="mailto:saivaibhav.veeramalla@gmail.com" target="_blank">Sai Vaibhav</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Initial video -->
+    <video class="initial-video" autoplay muted>
+        <source src="space-intro.mp4" type="video/mp4">
+    </video>
+    <video class="initial-video" autoplay muted id="mobile-video">
+        <source src="space-intro-M.mp4" type="video/mp4">
+    </video>
+    <!-- Show content after initial video ends -->
+  <script>
+    const initialVideo = document.querySelector('.initial-video');
+    const contentContainer = document.querySelector('.container');
+    const mobileVideo = document.getElementById('mobile-video');
+    initialVideo.addEventListener('ended', () => {
+        initialVideo.style.display = 'none';
+        mobileVideo.style.display = 'none';
+        contentContainer.style.display = 'block';
+        // Hide mobile video after 8 seconds
+        setTimeout(() => {
+            mobileVideo.style.display = 'none';
+        }, 4000);
+    });
+</script>
+    <!-- Include Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
